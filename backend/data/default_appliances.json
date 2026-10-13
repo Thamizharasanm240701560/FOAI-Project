@@ -1,0 +1,93 @@
+{
+  "demo_scenario": {
+    "backup": {
+      "max_power_watts": 1000,
+      "battery_capacity_wh": 3000,
+      "battery_percentage": 70,
+      "outage_duration_hours": 4,
+      "solar_enabled": false,
+      "solar_generation": null
+    },
+    "settings": {
+      "initial_temperature": 1000,
+      "min_temperature": 0.1,
+      "cooling_rate": 0.95,
+      "max_iterations": 10000,
+      "time_slot_minutes": 30
+    }
+  },
+  "default_appliances": [
+    {
+      "name": "Refrigerator",
+      "power_watts": 150,
+      "priority": "VERY_HIGH",
+      "required_duration_hours": 3.0,
+      "min_duration_hours": 2.0,
+      "max_duration_hours": 4.0,
+      "preferred_start_hour": null,
+      "preferred_end_hour": null,
+      "is_essential": true,
+      "continuous_operation": false
+    },
+    {
+      "name": "Wi-Fi Router",
+      "power_watts": 10,
+      "priority": "HIGH",
+      "required_duration_hours": 3.0,
+      "min_duration_hours": 2.0,
+      "max_duration_hours": 4.0,
+      "preferred_start_hour": null,
+      "preferred_end_hour": null,
+      "is_essential": true,
+      "continuous_operation": true
+    },
+    {
+      "name": "Fan",
+      "power_watts": 75,
+      "priority": "HIGH",
+      "required_duration_hours": 2.0,
+      "min_duration_hours": 1.0,
+      "max_duration_hours": 4.0,
+      "preferred_start_hour": null,
+      "preferred_end_hour": null,
+      "is_essential": false,
+      "continuous_operation": false
+    },
+    {
+      "name": "Television",
+      "power_watts": 120,
+      "priority": "MEDIUM",
+      "required_duration_hours": 1.0,
+      "min_duration_hours": 0.5,
+      "max_duration_hours": 3.0,
+      "preferred_start_hour": null,
+      "preferred_end_hour": null,
+      "is_essential": false,
+      "continuous_operation": false
+    },
+    {
+      "name": "Water Pump",
+      "power_watts": 750,
+      "priority": "MEDIUM",
+      "required_duration_hours": 0.5,
+      "min_duration_hours": 0.5,
+      "max_duration_hours": 1.0,
+      "preferred_start_hour": 6,
+      "preferred_end_hour": 9,
+      "is_essential": false,
+      "continuous_operation": false
+    },
+    {
+      "name": "Air Conditioner",
+      "power_watts": 1200,
+      "priority": "LOW",
+      "required_duration_hours": 1.0,
+      "min_duration_hours": 0.5,
+      "max_duration_hours": 2.0,
+      "preferred_start_hour": null,
+      "preferred_end_hour": null,
+      "is_essential": false,
+      "continuous_operation": false
+    }
+  ]
+}

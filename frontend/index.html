@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered household backup power optimizer using Simulated Annealing to intelligently schedule appliances during power outages.">
+    <title>AI Power Optimizer — Intelligent Backup Power Management</title>
+
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Chart.js v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- App styles -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  HEADER                                    -->
+<!-- ══════════════════════════════════════════ -->
+<header class="app-header">
+    <div class="header-content">
+        <div class="logo-group">
+            <div class="logo-icon">⚡</div>
+            <div>
+                <h1>AI Power Optimizer</h1>
+                <p class="subtitle">Intelligent Backup Power Management</p>
+            </div>
+        </div>
+        <div class="header-badge">
+            <span class="badge-dot"></span>
+            <span>Simulated Annealing Engine</span>
+        </div>
+    </div>
+</header>
+
+<main class="dashboard">
+
+<!-- ══════════════════════════════════════════ -->
+<!--  AGENT WORKFLOW BANNER                     -->
+<!-- ══════════════════════════════════════════ -->
+<section class="agent-workflow" id="agentWorkflow">
+    <h2 class="section-title">🤖 AI Agent Workflow</h2>
+    <div class="workflow-steps">
+        <div class="step" data-step="observe"><span class="step-icon">👁️</span><span class="step-label">Observe</span></div>
+        <div class="step-arrow">→</div>
+        <div class="step" data-step="analyze"><span class="step-icon">🔍</span><span class="step-label">Analyze</span></div>
+        <div class="step-arrow">→</div>
+        <div class="step" data-step="search"><span class="step-icon">🔎</span><span class="step-label">Search</span></div>
+        <div class="step-arrow">→</div>
+        <div class="step" data-step="optimize"><span class="step-icon">⚙️</span><span class="step-label">Optimize</span></div>
+        <div class="step-arrow">→</div>
+        <div class="step" data-step="evaluate"><span class="step-icon">📊</span><span class="step-label">Evaluate</span></div>
+        <div class="step-arrow">→</div>
+        <div class="step" data-step="decide"><span class="step-icon">✅</span><span class="step-label">Decide</span></div>
+        <div class="step-arrow">→</div>
+        <div class="step" data-step="act"><span class="step-icon">🎯</span><span class="step-label">Act</span></div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  INPUT SECTION                             -->
+<!-- ══════════════════════════════════════════ -->
+<div class="input-grid">
+
+    <!-- Backup System Card -->
+    <section class="card" id="backupCard">
+        <h2 class="card-title">🔋 Backup System</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="maxPower">Max Inverter Power (W)</label>
+                <input type="number" id="maxPower" value="1000" min="1" step="50">
+            </div>
+            <div class="form-group">
+                <label for="batteryCapacity">Battery Capacity (Wh)</label>
+                <input type="number" id="batteryCapacity" value="3000" min="1" step="100">
+            </div>
+            <div class="form-group">
+                <label for="batteryPercentage">Current Battery (%)</label>
+                <input type="number" id="batteryPercentage" value="70" min="0" max="100" step="1">
+                <div class="range-bar">
+                    <div class="range-fill" id="batteryFill" style="width:70%"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="outageDuration">Outage Duration (hours)</label>
+                <input type="number" id="outageDuration" value="4" min="0.5" step="0.5">
+            </div>
+            <div class="form-group">
+                <label for="timeSlot">Time Slot Size</label>
+                <select id="timeSlot">
+                    <option value="15">15 minutes</option>
+                    <option value="30" selected>30 minutes</option>
+                    <option value="60">60 minutes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="solarEnabled">
+                    <input type="checkbox" id="solarEnabled">
+                    Enable Solar Generation
+                </label>
+            </div>
+        </div>
+        <!-- Solar Generation Panel (hidden by default) -->
+        <div class="solar-panel" id="solarPanel" style="display:none;">
+            <h3>☀️ Solar Generation (Watts per slot)</h3>
+            <div id="solarInputs" class="solar-inputs"></div>
+        </div>
+
+        <!-- Available Energy Display -->
+        <div class="energy-display">
+            <div class="energy-label">Available Energy</div>
+            <div class="energy-value" id="availableEnergy">2100 Wh</div>
+        </div>
+    </section>
+
+    <!-- Appliances Card -->
+    <section class="card card-wide" id="appliancesCard">
+        <div class="card-header-row">
+            <h2 class="card-title">🏠 Appliances</h2>
+            <button class="btn btn-sm" id="addApplianceBtn" onclick="addApplianceRow()">+ Add Appliance</button>
+        </div>
+        <div class="table-wrap">
+            <table id="applianceTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Power (W)</th>
+                        <th>Priority</th>
+                        <th>Required (h)</th>
+                        <th>Min (h)</th>
+                        <th>Max (h)</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Essential</th>
+                        <th>Continuous</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="applianceBody">
+                    <!-- Rows populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  OPTIMIZATION SETTINGS + RUN              -->
+<!-- ══════════════════════════════════════════ -->
+<div class="action-row">
+    <section class="card card-settings" id="settingsCard">
+        <details>
+            <summary class="card-title clickable">⚙️ Advanced SA Settings</summary>
+            <div class="form-grid sa-settings">
+                <div class="form-group">
+                    <label for="initTemp">Initial Temperature</label>
+                    <input type="number" id="initTemp" value="1000" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="minTemp">Minimum Temperature</label>
+                    <input type="number" id="minTemp" value="0.1" min="0.001" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="coolingRate">Cooling Rate</label>
+                    <input type="number" id="coolingRate" value="0.95" min="0.01" max="0.999" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="maxIter">Max Iterations</label>
+                    <input type="number" id="maxIter" value="10000" min="100" step="1000">
+                </div>
+            </div>
+        </details>
+    </section>
+
+    <button class="btn btn-run" id="runBtn" onclick="runOptimization()">
+        <span class="btn-icon">🚀</span>
+        <span>Run Optimization</span>
+    </button>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  LOADING INDICATOR                         -->
+<!-- ══════════════════════════════════════════ -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none;">
+    <div class="spinner"></div>
+    <p>Running Simulated Annealing…</p>
+    <p class="loading-sub">Exploring solution space</p>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  RESULTS SECTION (hidden until run)        -->
+<!-- ══════════════════════════════════════════ -->
+<div id="resultsSection" style="display:none;">
+
+    <!-- Summary Stats -->
+    <section class="card" id="summaryCard">
+        <h2 class="card-title">📊 Optimization Summary</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="statFitness">—</div>
+                <div class="stat-label">Fitness Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statEnergy">—</div>
+                <div class="stat-label">Energy Consumed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statRemaining">—</div>
+                <div class="stat-label">Remaining Energy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statBattery">—</div>
+                <div class="stat-label">Battery Remaining</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statPeak">—</div>
+                <div class="stat-label">Peak Power</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statPriority">—</div>
+                <div class="stat-label">Priority Satisfaction</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statEssential">—</div>
+                <div class="stat-label">Essential Satisfaction</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statPowered">—</div>
+                <div class="stat-label">Appliances Powered</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Warnings -->
+    <div id="warningsSection" style="display:none;">
+        <section class="card card-warnings">
+            <h2 class="card-title">⚠️ Warnings</h2>
+            <div id="warningsList"></div>
+        </section>
+    </div>
+
+    <!-- Optimized Schedule (Gantt) -->
+    <section class="card" id="scheduleCard">
+        <h2 class="card-title">📅 Optimized Schedule</h2>
+        <div class="gantt-wrap" id="ganttContainer"></div>
+    </section>
+
+    <!-- Charts Row -->
+    <div class="charts-grid">
+        <section class="card" id="batteryChartCard">
+            <h2 class="card-title">🔋 Battery Status</h2>
+            <canvas id="batteryChart"></canvas>
+        </section>
+        <section class="card" id="powerChartCard">
+            <h2 class="card-title">⚡ Power Usage</h2>
+            <canvas id="powerChart"></canvas>
+        </section>
+    </div>
+
+    <!-- Before vs After Comparison -->
+    <section class="card" id="comparisonCard">
+        <h2 class="card-title">🔄 Before vs After — Naive vs AI Optimized</h2>
+        <div class="comparison-grid">
+            <div class="comparison-col">
+                <h3 class="comparison-header naive-header">📋 Naive Allocation</h3>
+                <div class="comparison-stats" id="naiveStats"></div>
+            </div>
+            <div class="comparison-divider"></div>
+            <div class="comparison-col">
+                <h3 class="comparison-header sa-header">🤖 AI Optimized (SA)</h3>
+                <div class="comparison-stats" id="saStats"></div>
+            </div>
+        </div>
+        <div class="comparison-chart-wrap">
+            <canvas id="comparisonChart"></canvas>
+        </div>
+    </section>
+
+    <!-- Explainability -->
+    <section class="card" id="explanationCard">
+        <h2 class="card-title">💡 AI Explanations</h2>
+        <div id="explanationList" class="explanation-list"></div>
+    </section>
+
+    <!-- Algorithm Details -->
+    <section class="card" id="algorithmCard">
+        <h2 class="card-title">🧠 Simulated Annealing — Algorithm Details</h2>
+        <div class="algo-stats-grid">
+            <div class="algo-stat">
+                <span class="algo-label">Initial Temperature</span>
+                <span class="algo-value" id="algoInitTemp">—</span>
+            </div>
+            <div class="algo-stat">
+                <span class="algo-label">Final Temperature</span>
+                <span class="algo-value" id="algoFinalTemp">—</span>
+            </div>
+            <div class="algo-stat">
+                <span class="algo-label">Total Iterations</span>
+                <span class="algo-value" id="algoIterations">—</span>
+            </div>
+            <div class="algo-stat">
+                <span class="algo-label">Initial Fitness</span>
+                <span class="algo-value" id="algoInitFitness">—</span>
+            </div>
+            <div class="algo-stat">
+                <span class="algo-label">Best Fitness</span>
+                <span class="algo-value" id="algoBestFitness">—</span>
+            </div>
+            <div class="algo-stat">
+                <span class="algo-label">Accepted Solutions</span>
+                <span class="algo-value" id="algoAccepted">—</span>
+            </div>
+            <div class="algo-stat">
+                <span class="algo-label">Rejected Solutions</span>
+                <span class="algo-value" id="algoRejected">—</span>
+            </div>
+            <div class="algo-stat">
+                <span class="algo-label">Acceptance Rate</span>
+                <span class="algo-value" id="algoAcceptRate">—</span>
+            </div>
+        </div>
+        <div class="algo-chart-wrap">
+            <canvas id="fitnessChart"></canvas>
+        </div>
+    </section>
+</div>
+
+</main>
+
+<!-- Footer -->
+<footer class="app-footer">
+    <p>AI Power Optimizer — FOAI Practical Project | Simulated Annealing for Local Search & Optimization</p>
+</footer>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
